@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+    width: 4px; /* Adjust the width as needed */
+}
+
+::-webkit-scrollbar-track {
+    background-color: #675D50; /* Track color */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #B3A492; /* Thumb color */
+    border-radius: 6px; /* Rounded corners */
+}
