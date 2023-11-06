@@ -9,11 +9,21 @@ function getworldChatsData(collectionName) {
         // Create a reference to the Firestore collection you want to listen to
         const collectionRef = collection(db, collectionName);
 
+        // Get the current date in the format 'YYYY-MM-DD'
+        const currentDate = new Date().toISOString().split('T')[0];
+
         // Listen for changes in the collection
         const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
             const updatedData: ((prevState: never[]) => never[]) | DocumentData[] = [];
+
             querySnapshot.forEach((doc) => {
-                updatedData.push({ id: doc.id, data: doc.data() });
+                const documentData = doc.data();
+                const documentDate = documentData.timestamp.split('T')[0]; // Extract date part
+
+                // Check if the extracted date matches the current date
+                if (documentDate === currentDate) {
+                    updatedData.push({ id: doc.id, data: documentData });
+                }
             });
 
             // Sort the data by timestamp in ascending order

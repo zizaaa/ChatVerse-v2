@@ -12,7 +12,6 @@ import IsLogIn from "./components/protected/IsLogin"
 
 function App() {
 
-
   return (
     <main 
       className="bg-taupe text-white flex items-center justify-center w-screen h-screen"
@@ -71,9 +70,12 @@ function App() {
                 />
             </Route>
 
-          <Route path="*" element={
-            <Navigate to="/" replace />
-          }/>
+          <Route 
+            path="*" 
+            element={
+              <Navigate to="/" replace />
+            }
+          />
         </Routes>
     </main>
   )
