@@ -1,16 +1,16 @@
 import EmojiPicker from 'emoji-picker-react';
 
-function Emoji() {
+function ReactionModal(){
     return (
-        <div className='absolute right-5 bottom-14'>
+        <div id='emoji-modal-container'>
             <EmojiPicker 
                 height={300} 
                 width={300} 
-                onEmojiClick={(e)=>{console.log(e)}}
                 lazyLoadEmojis = {true}
+                skinTonesDisabled = {true}
             />
         </div>
     );
 }
 
-export default Emoji
+export default ReactionModal

@@ -2,7 +2,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import userUID from "../../../components/cookies/userUID";
 
-async function postworldChat(message: { message: any; }){
+async function postworldChat(message){
 
     const generateTimestamp = () => {
         const currentTimestamp = new Date();
@@ -13,6 +13,8 @@ async function postworldChat(message: { message: any; }){
         message: message.message,
         reactions: [],
         senderUID: userUID(),
+        type:message.type,
+        replyTo:message.replyTo,
         timestamp: generateTimestamp()
     };
 
