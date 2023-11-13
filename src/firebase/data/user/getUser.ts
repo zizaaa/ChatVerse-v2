@@ -11,7 +11,7 @@ async function getUser(userUId: unknown) {
           return {
             name:userDocSnapshot.data().name,
             username:userDocSnapshot.data().username,
-            avatar:userDocSnapshot.data().avatar
+            avatar:userDocSnapshot.data().avatar,
           };
         } else {
           return(null);

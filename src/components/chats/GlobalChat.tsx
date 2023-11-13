@@ -5,6 +5,7 @@ import { BsPlusCircleFill,BsThreeDots } from "react-icons/bs"
 import { RiEmojiStickerLine } from "react-icons/ri"
 import { BiShare } from "react-icons/bi"
 import { AiFillCloseCircle } from "react-icons/ai"
+import { FaTrashAlt,FaEdit } from "react-icons/fa"
 
 import getworldChatsData from "../../firebase/data/worldchat/getworldChatsData";
 import postworldChat from "../../firebase/data/worldchat/postworldChat";
@@ -12,6 +13,9 @@ import getUser from "../../firebase/data/user/getUser";
 import userUID from "../cookies/userUID";
 import EmojiModal from "../Modals/EmojiModal";
 import singleMessage from "../../firebase/data/worldchat/singleMessage";
+import updateWorldChat from "../../firebase/data/worldchat/updateWorldChat";
+import deleteChat from "../../firebase/data/worldchat/deleteChat";
+import SmallEmojiModal from "../Modals/smallEmojiModal";
 // import ReactionModal from "../Modals/ReactionModal";
 
 function GlobalChat() {
@@ -32,6 +36,10 @@ function GlobalChat() {
         const messageIDRef = useRef(null);
         //for replies
         const [messageData, setMessageData] = useState({});
+        //for editing message
+        const [editMessage, setEditMessage] = useState(false)
+            const toEditMessageID = useRef(null);
+            const [toEditMessage, setToEditMessage] = useState('');
     //message checker if has a length
     const [hasMessage, setHasMessage] = useState(false);
     //for new message auto scroll effect
@@ -40,11 +48,15 @@ function GlobalChat() {
     //date today
     const [todaysDate, setTodaysDate] = useState('');
     //logedin UID
-    const logedInUID = userUID()
+    const logedInUID = userUID();
     //modal
     const [showModal, setShowModal] = useState(false);
     //options
     const [isShowOptions, setIsShowOption] = useState(false);
+        const optionIDRef = useRef(null);
+    //reactions
+    const [isShowReaction, setIsShowReaction] = useState(false);
+        const reactionID = useRef(null);
 
     const fetchUserDataForMessages = async (messages: { data: { senderUID: unknown; } | { senderUID: string | number; }; }[]) => {
         const userDataPromises = messages.map((message: { data: { senderUID: unknown; }; }) => {
@@ -138,9 +150,62 @@ function GlobalChat() {
         messageIDRef.current = messageID;
     }
 
+    const handleOptionButton = (messageID: null) =>{
+        optionIDRef.current = messageID;
+        setIsShowReaction(false);
+        setIsShowOption(isShowOptions ? false:true)
+    }
+
+    const handleShowReaction = (messageID: null) =>{
+        reactionID.current = messageID;
+        setIsShowOption(false);
+        setIsShowReaction(isShowReaction ? false:true);
+    }
+
+    const handleHideModals =()=>{
+        setIsShowOption(false);
+        setIsShowReaction(false);
+    }
+
+    const handleEditMessage =(messageID, message)=>{
+
+        setToEditMessage(message)
+        toEditMessageID.current = messageID
+
+        setEditMessage(true)
+    }
+
+    const handleDeleteMessage =(messageID: any)=>{
+        deleteChat(messageID);
+    }
+
+    const handleCancelEditMessage =()=>{
+        setEditMessage(false)
+        toEditMessageID.current = ''
+    }
+
+    const handleSaveEditedMessage =()=>{
+        updateWorldChat(toEditMessageID.current, toEditMessage)
+
+        handleCancelEditMessage()
+    }
+
+    //escape and enter event
+    const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+            // Handle escape key press
+            handleCancelEditMessage();
+            console.log('escape')
+        } else if (e.key === 'Enter') {
+            // Handle enter key press
+            handleSaveEditedMessage();
+            console.log('enter')
+        }
+    };
+
     return (
         <div className="bg-darkBeige h-full p-2 rounded-bl-lg flex flex-col items-center justify-center relative">
-            <div className="w-full flex-1 overflow-auto flex items-end">
+            <div className="w-full flex-1 overflow-auto flex items-end pb-1">
                 <div 
                     ref={chatContainerRef}
                     className="w-full flex overflow-auto max-h-[28rem] flex-col gap-1 py-2"
@@ -160,8 +225,9 @@ function GlobalChat() {
                     {
                         chatData.map((message) => (
                             <div 
-                                className={`flex ${message.data.senderUID === logedInUID ? 'flex-row-reverse':'flex-row'} flex-row items-end gap-3 p-2 max-w-full relative`}
+                                className={`flex ${message.data.senderUID === logedInUID ? 'flex-row-reverse':'flex-row'} flex-row items-end gap-3 p-2 max-w-full mb-3 relative`}
                                 key={message.id}
+                                id={message.id}
                             >
                                 <div>
                                 {
@@ -175,7 +241,7 @@ function GlobalChat() {
                                     )
                                 }
                                 </div>
-
+                                
                                 <div
                                     className={`flex flex-col flex-wrap ${message.data.senderUID === logedInUID ? 'items-end':'items-start'}`}
                                 >
@@ -190,7 +256,7 @@ function GlobalChat() {
                                                         <>
                                                             <BiShare/>
                                                             {
-                                                                `${userDataMap[message.data.senderUID].name} replied to ${userDataMap[messageData[message.id].senderUID].name}`
+                                                                `${userDataMap[message.data.senderUID]?.name || 'undefined user'} replied to ${userDataMap[messageData[message.id]?.senderUID]?.name || 'undefined user'}`
                                                             }
                                                         </>
                                                     :
@@ -202,33 +268,86 @@ function GlobalChat() {
                                     
                                     {
                                         message.data.type === 'reply' ?
-
-                                        <p
+                                        
+                                        <a href={`#${message.data.replyTo.messageID}`}
                                             className="bg-[#675d5085] text-sm text-[rgba(255,255,255,0.42)] py-1 px-2 rounded-md"
                                         >
                                             {
-                                                messageData[message.id] != undefined ? messageData[message.id].message:null
+                                                messageData[message.id] != undefined ? messageData[message.id].message:'message removed'
                                             }
-                                        </p>
+                                        </a>
                                         :
                                         null
                                     }
 
                                     <div className={`group flex flex-row items-center ${message.data.senderUID === logedInUID ? 'flex-row-reverse text-end':'flex-row'} gap-2`}>
-                                            <p
-                                                className="bg-taupe max-w-[20rem] p-2 flex-wrap h-auto break-words rounded-lg"
-                                            >
-                                                {
-                                                    message.data.message
-                                                }
-                                            </p>
+                                            
+                                            {
+                                                editMessage &&  toEditMessageID.current === message.id ?
+                                                    <div className="flex flex-col w-full">
+                                                        <input 
+                                                            type='text' 
+                                                            className="bg-[#675d5085] p-2 rounded-sm outline-none w-full"
+                                                            value={toEditMessage}
+                                                            onChange={(e)=>{setToEditMessage(e.target.value)}}
+                                                        />
+                                                        <span className="text-[12px] text-grayish">
+                                                            escape to <button onKeyDown={handleKeyDown} onClick={handleCancelEditMessage} className="text-taupe">cancel</button> * <button onKeyDown={handleKeyDown} onClick={handleSaveEditedMessage} className="text-taupe">enter</button> to save
+                                                        </span>
+                                                    </div>
+                                                :
+                                                    <div className="max-w-[20rem] break-words relative">
+                                                        <p
+                                                            className="bg-taupe w-full p-2 flex-wrap h-auto rounded-lg"
+                                                        >
+                                                            {
+                                                                message.data.message
+                                                            }
+                                                        </p>
 
-                                        <div className={`group-hover:flex hidden items-center gap-2 ${message.data.senderUID === logedInUID ? 'flex-row-reverse':'flex-row'}`}>
-                                            <button
-                                                className="text-lg text-grayishWhite bg-taupe rounded-full p-1 drop-shadow-md"
-                                            >
-                                                <RiEmojiStickerLine/>
-                                            </button>
+                                                        <div className={`flex absolute gap-1 -bottom-7 ${message.data.senderUID === logedInUID ? '' : 'left-0'} right-0`}>
+                                                            {Array.from(new Set(message.data.reactions.map((reaction) => reaction.emoji))).map((uniqueReaction, index) => {
+                                                                const count = message.data.reactions.filter((reaction) => reaction.emoji === uniqueReaction).length;
+
+                                                                return (
+                                                                    <div key={index} className="bg-taupe flex items-center gap-1 p-1 rounded-sm text-[12px]">
+                                                                        <p>{uniqueReaction}</p>
+                                                                        {
+                                                                            count === 1 ? 
+                                                                                null
+                                                                            :
+                                                                                <p>{count}</p>
+                                                                        }
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                            }
+
+                                        <div 
+                                            className={`${toEditMessageID.current !== message.id ? 'group-hover:flex hidden':'hidden'} items-center gap-2 ${message.data.senderUID === logedInUID ? 'flex-row-reverse':'flex-row'}`}
+                                        >
+                                            <div className="relative">
+                                                {
+                                                    isShowReaction && reactionID.current === message.id ?
+                                                    <div 
+                                                        onMouseLeave={handleHideModals}
+                                                        id={message.id}
+                                                        className={`absolute -top-9 ${message.data.senderUID === logedInUID ? 'right-0':'left-0'} z-10 w-36`}
+                                                    >
+                                                        <SmallEmojiModal messageID={message.id} reactionSender={logedInUID} setIsShowReaction={setIsShowReaction}/>
+                                                    </div>
+                                                    :
+                                                    null
+                                                }
+                                                <button
+                                                    onClick={()=>{handleShowReaction(message.id)}}
+                                                    className="text-lg text-grayishWhite bg-taupe rounded-full p-1 drop-shadow-md"
+                                                >
+                                                    <RiEmojiStickerLine/>
+                                                </button>
+                                            </div>
                                             <button
                                                 onClick={(e)=>{handleReplyButton(e)}}
                                                 id={`${message.id} - ${message.data.senderUID}`}
@@ -236,29 +355,51 @@ function GlobalChat() {
                                             >
                                                 <BiShare className='pointer-events-none'/>
                                             </button>
-                                            <div className="flex items-center relative">
-                                                {/* {
-                                                    isShowOptions ?
-                                                    <span>
-                                                        <button>
-                                                            Delete
-                                                        </button>
-                                                        <button>
+                                            <div 
+                                                className="flex items-center relative"
+                                            >
+                                                {
+                                                    isShowOptions && optionIDRef.current === message.id ?
+                                                    <div 
+                                                        onMouseLeave={handleHideModals}
+                                                        className={`bg-taupe rounded-sm absolute ${message.data.senderUID === logedInUID ? '-top-16 ':'-top-10'} -left-4 p-2 flex flex-col items-start gap-1`}
+                                                    >
+                                                        
+                                                        <button 
+                                                            onClick={()=>{handleEditMessage(message.id, message.data.message)}}
+                                                            className="text-sm text-grayishWhite flex items-center gap-1"
+                                                        >
+                                                            <FaEdit/>
                                                             Edit
                                                         </button>
-                                                    </span>
+
+                                                        <button 
+                                                            onClick={()=>{handleDeleteMessage(message.id)}}
+                                                            className="text-sm text-red-500 font-medium flex items-center gap-1"
+                                                        >
+                                                            <FaTrashAlt className='text-red-500'/>
+                                                            Delete
+                                                        </button>
+                                                    </div>
                                                     :
                                                     null
-                                                } */}
+                                                }
                                                 
-                                                <button
-                                                    onClick={()=>{setIsShowOption(true)}}
-                                                    className="text-lg text-grayishWhite bg-taupe rounded-full p-1 drop-shadow-md"
-                                                >
-                                                    <BsThreeDots/>
-                                                </button>
+                                                {
+                                                    message.data.senderUID === logedInUID ?
+
+                                                    <button
+                                                        onClick={()=>{handleOptionButton(message.id)}}
+                                                        className="text-lg text-grayishWhite bg-taupe rounded-full p-1 drop-shadow-md"
+                                                    >
+                                                        <BsThreeDots/>
+                                                    </button>
+                                                    :
+                                                    null
+                                                }
                                             </div>
                                         </div>
+                                        
                                     </div>
                                 </div>
                             </div>

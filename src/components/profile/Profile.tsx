@@ -1,7 +1,24 @@
 import { FaRegBell } from "react-icons/fa"
 import { FaUserSecret } from "react-icons/fa6"
+import userUID from "../cookies/userUID"
+import { useEffect, useState } from "react";
+import logedInUser from "../../firebase/data/user/logedInUser";
 
 function Profile(){
+
+    const logedInUID = userUID();
+    const [userData, setUserData] = useState({})
+
+    useEffect(()=>{
+        const fetchData = async()=>{
+            const data = await logedInUser(logedInUID)
+            setUserData(data)
+        }
+
+        fetchData()
+    },[userData])
+    
+
     return(
         <div className="w-full h-full p-2 flex flex-col">
             <div className="w-full flex items-center justify-between">
@@ -17,16 +34,21 @@ function Profile(){
                     
                     <div className="w-full flex flex-col items-center justify-center relative">
                         {/* banner */}
-                            <img 
-                            src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuSHLm6k1OWNn1Gh1kCPQJJNnmKDb55h2a1Lii0BLL_7twPfQLlqO9PbiDLGls3whzR5Y&usqp=CAU'
-                            className="rounded-t-md h-[10rem] w-full object-cover"
-                            loading="lazy"
-                            />
+                            {
+                                userData.banner ?
+                                <img 
+                                    src={userData.banner}
+                                    className="rounded-t-md h-[10rem] w-full object-cover"
+                                    loading="lazy"
+                                    />
+                                :
+                                <div className="rounded-t-md h-[10rem] w-full bg-lightBeige"></div>
+                            }
 
                         {/* profile */}
                         <div className="absolute -bottom-12 bg-beige medium:bg-taupe rounded-full p-[4px]">
                             <img 
-                                src='https://c4.wallpaperflare.com/wallpaper/885/793/289/anime-darling-in-the-franxx-zero-two-darling-in-the-franxx-wallpaper-preview.jpg'
+                                src={userData.avatar ? userData.avatar:'/user.jpg'}
                                 className="h-[8rem] w-[8rem] rounded-full object-cover"
                                 loading="lazy"
                             />
@@ -34,17 +56,17 @@ function Profile(){
                     </div>
 
                     <div className="w-full hidden medium:flex flex-col items-start justify-center gap-1 h-full px-5 text-grayishWhite my-12">
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap text-sm">
                             <p>Username:</p>
-                            <p></p>
+                            <p>{userData.username}</p>
                         </div>
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap text-sm">
                             <p>Name:</p>
-                            <p></p>
+                            <p>{userData.name}</p>
                         </div>
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap text-sm">
                             <p>Email:</p>
-                            <p></p>
+                            <p>{userData.email}</p>
                         </div>
                     </div>
                 </div>
