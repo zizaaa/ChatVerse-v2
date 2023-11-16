@@ -37,4 +37,3 @@ async function removeReaction(messageId, reaction) {
 }
 
 export default removeReaction;
-

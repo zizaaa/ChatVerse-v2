@@ -40,6 +40,9 @@ function GlobalChat() {
         const [editMessage, setEditMessage] = useState(false)
             const toEditMessageID = useRef(null);
             const [toEditMessage, setToEditMessage] = useState('');
+        //for upload img/vid
+        const [uploadFile, setUploadFile] = useState(null);
+            const [fileContent, setFileContent] = useState(null);
     //message checker if has a length
     const [hasMessage, setHasMessage] = useState(false);
     //for new message auto scroll effect
@@ -127,13 +130,18 @@ function GlobalChat() {
             replyTo:messageType === 'reply' ? {
                 messageID:messageIDRef.current,
                 senderID:messageSenderUIDRef.current
-            }:''
+            }:'',
+            file:uploadFile ? uploadFile:''
         };
 
         postworldChat(message);
         messageRef.current.value = '';
+
         setHasMessage(false)
-        setMessageType('message')
+        setMessageType('message');
+
+        setUploadFile(null);
+        setFileContent(null);
     }
 
     const handleReplyButton = (e) =>{
@@ -203,6 +211,29 @@ function GlobalChat() {
         }
     };
 
+    const handleFiles = (e) => {
+        const file = e.target.files[0];
+    
+        if (file) {
+            //show send button
+            setHasMessage(true);
+
+            const reader = new FileReader();
+    
+            reader.onload = (e) => {
+                setFileContent(e.target.result);
+            };
+    
+            reader.readAsDataURL(file);
+        }
+        setUploadFile(file);
+    };
+    
+    const handleRemoveSelectedFile =()=>{
+        setFileContent(null)
+        setUploadFile(null)
+    }
+
     return (
         <div className="bg-darkBeige h-full p-2 rounded-bl-lg flex flex-col items-center justify-center relative">
             <div className="w-full flex-1 overflow-auto flex items-end pb-1">
@@ -211,15 +242,15 @@ function GlobalChat() {
                     className="w-full flex overflow-auto max-h-[28rem] flex-col gap-1 py-2"
                 >
                     <div className="flex flex-row items-center gap-2">
-                        <span className="flex-1 border-t-[1px] border-grayishWhite"></span>
+                        <span className="flex-1 border-t-[1px] border-[rgba(255,255,255,0.61)]"></span>
                         <p
-                            className="text-center text-grayishWhite"
+                            className="text-center text-[rgba(255,255,255,0.61)] "
                         >
                             {
                                 todaysDate
                             }
                         </p>
-                        <span className="flex-1 border-t-[1px] border-grayishWhite"></span>
+                        <span className="flex-1 border-t-[1px] border-[rgba(255,255,255,0.61)]"></span>
                     </div>
                     
                     {
@@ -273,7 +304,7 @@ function GlobalChat() {
                                             className="bg-[#675d5085] text-sm text-[rgba(255,255,255,0.42)] py-1 px-2 rounded-md"
                                         >
                                             {
-                                                messageData[message.id] != undefined ? messageData[message.id].message:'message removed'
+                                                messageData[message.id] != undefined ? messageData[message.id].message !== '' ? messageData[message.id].message:'image' :'message removed'
                                             }
                                         </a>
                                         :
@@ -297,14 +328,41 @@ function GlobalChat() {
                                                     </div>
                                                 :
                                                     <div className="max-w-[20rem] break-words relative">
-                                                        <p
-                                                            className="bg-taupe w-full p-2 flex-wrap h-auto rounded-lg"
-                                                        >
-                                                            {
-                                                                message.data.message
-                                                            }
-                                                        </p>
+                                                        {
+                                                            message.data.message === '' && message.data.file !== '' ?
+                                                            
+                                                                <img 
+                                                                    src={message.data.file}
+                                                                    className="bg-red-300 max-h-40 max-w-40"
+                                                                    loading="lazy"
+                                                                />
+                                                            :
 
+                                                            message.data.message !== '' && message.data.file !== '' ?
+                                                            <div className="bg-taupe">
+                                                                <img 
+                                                                    src={message.data.file}
+                                                                    className="bg-red-300 max-h-40 max-w-40"
+                                                                    loading="lazy"
+                                                                />
+                                                                <p
+                                                                    className="w-full p-2 flex-wrap h-auto rounded-lg"
+                                                                >
+                                                                    {
+                                                                        message.data.message
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                            :
+                                                            <p
+                                                                className="bg-taupe w-full p-2 flex-wrap h-auto rounded-lg"
+                                                            >
+                                                                {
+                                                                    message.data.message
+                                                                }
+                                                            </p>
+                                                        }
+                                                        
                                                         <div className={`flex absolute gap-1 -bottom-7 ${message.data.senderUID === logedInUID ? '' : 'left-0'} right-0`}>
                                                             {Array.from(new Set(message.data.reactions.map((reaction) => reaction.emoji))).map((uniqueReaction, index) => {
                                                                 const count = message.data.reactions.filter((reaction) => reaction.emoji === uniqueReaction).length;
@@ -312,12 +370,7 @@ function GlobalChat() {
                                                                 return (
                                                                     <div key={index} className="bg-taupe flex items-center gap-1 p-1 rounded-sm text-[12px]">
                                                                         <p>{uniqueReaction}</p>
-                                                                        {
-                                                                            count === 1 ? 
-                                                                                null
-                                                                            :
-                                                                                <p>{count}</p>
-                                                                        }
+                                                                        <p>{count}</p>
                                                                     </div>
                                                                 );
                                                             })}
@@ -416,9 +469,10 @@ function GlobalChat() {
                     }
                 </div>
 
+                <div>
                 {
                     messageType === 'reply' ?
-                        <div className="bg-[#675d5085] absolute -top-7 left-0 right-0 py-1 px-2 text-sm w-full rounded-t-md flex items-center justify-between">
+                        <div className={`bg-[#675d5085] absolute ${fileContent ? 'top-[-7.7rem]':'-top-7'} left-0 right-0 py-1 px-2 text-sm w-full rounded-t-md flex items-center justify-between`}>
                                 {
                                         userDataMap[messageSenderUIDRef.current] && 
                                         (
@@ -444,12 +498,44 @@ function GlobalChat() {
                     :
                         null
                 }
-                
-                <div className="w-full bg-taupe drop-shadow-md flex items-center px-2 py-1 rounded-sm">
-                    <button className="text-grayishWhite text-xl">
-                        <BsPlusCircleFill/>
-                    </button>
+                    {
+                        fileContent ?
+                        <div className={`bg-[#675d50] absolute h-24 -top-24 left-0 right-0 py-1 px-2 text-sm w-full ${messageType === 'reply' ? '':'rounded-t-md'} flex items-center justify-between`}>
+                            <div
+                                className="h-20 w-20 bg-red-300 flex items-center justify-center mt-2 relative"
+                            >
+                                <button 
+                                    onClick={handleRemoveSelectedFile}
+                                    className="absolute top-0 right-0 text-lg"
+                                >
+                                    <AiFillCloseCircle/>
+                                </button>
+                                <img 
+                                    src={fileContent ? fileContent:''}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        </div>
+                        :
+                        null
+                    }
+                </div>
 
+                <div className="w-full bg-taupe drop-shadow-md flex items-center px-2 py-1 rounded-sm">
+                    <div className="flex items-center space-x-4">
+                        <label htmlFor="fileInput" className=" text-white rounded cursor-pointer text-2xl">
+                            <BsPlusCircleFill/> 
+                        </label>
+                        <input 
+                            type="file" 
+                            id="fileInput" 
+                            name="fileInput" 
+                            className="hidden" 
+                            accept="image/*, .gif"
+                            onChange={(e)=>{handleFiles(e)}}
+                        />
+                    </div>
+                    {/* <BsPlusCircleFill/> */}
                     <input 
                         type="text"
                         className="w-full rounded-sm px-2 py-1 text-grayishWhite outline-none bg-transparent"
