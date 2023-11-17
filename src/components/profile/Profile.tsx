@@ -3,6 +3,7 @@ import { FaUserSecret } from "react-icons/fa6"
 import userUID from "../cookies/userUID"
 import { useEffect, useState } from "react";
 import logedInUser from "../../firebase/data/user/logedInUser";
+import { Link } from "react-router-dom";
 
 function Profile(){
 
@@ -38,24 +39,24 @@ function Profile(){
                                 userData.banner ?
                                 <img 
                                     src={userData.banner}
-                                    className="rounded-t-md h-[10rem] w-full object-cover"
+                                    className="rounded-t-md h-[8rem] w-full object-cover"
                                     loading="lazy"
                                     />
                                 :
-                                <div className="rounded-t-md h-[10rem] w-full bg-lightBeige"></div>
+                                <div className="rounded-t-md h-[8rem] w-full bg-lightBeige"></div>
                             }
 
                         {/* profile */}
-                        <div className="absolute -bottom-12 bg-beige medium:bg-taupe rounded-full p-[4px]">
+                        <div className="absolute -bottom-9 bg-taupe rounded-full p-[4px]">
                             <img 
                                 src={userData.avatar ? userData.avatar:'/user.jpg'}
-                                className="h-[8rem] w-[8rem] rounded-full object-cover"
+                                className="h-[6rem] w-[6rem] rounded-full object-cover"
                                 loading="lazy"
                             />
                         </div>
                     </div>
 
-                    <div className="w-full hidden medium:flex flex-col items-start justify-center gap-1 h-full px-5 text-grayishWhite my-12">
+                    <div className="w-full flex flex-col items-start justify-center gap-2 h-full px-5 text-grayishWhite mt-12 mb-6">
                         <div className="flex items-center gap-2 flex-wrap text-sm">
                             <p>Username:</p>
                             <p>{userData.username}</p>
@@ -70,7 +71,34 @@ function Profile(){
                         </div>
                     </div>
                 </div>
-                <button className="bg-taupe drop-shadow-md mt-5 py-3 rounded-md">Log out</button>
+                <div className="mt-2 flex flex-col flex-grow">
+                    <h1 className="text-grayishWhite text-sm">
+                        Settings
+                    </h1>
+                    <div className="flex flex-col bg-taupe rounded-md drop-shadow-md">
+                        <Link 
+                            to=''
+                            className="px-2 py-3 text-grayishWhite text-[15px]"
+                        >
+                            My Account
+                        </Link>
+                        <span className="border-[rgba(255,255,255,0.61)] border-t-[1px]"></span>
+                        <Link 
+                            to=''
+                            className="px-2 py-3 text-grayishWhite text-[15px]"
+                        >
+                            Profile
+                        </Link>
+                        <span className="border-[rgba(255,255,255,0.61)] border-t-[1px]"></span>
+                        <Link 
+                            to=''
+                            className="px-2 py-2 text-grayishWhite text-[15px]"
+                        >
+                            Devices
+                        </Link>
+                    </div>
+                </div>
+                <button className="bg-taupe drop-shadow-md py-3 mt-1 rounded-md">Log out</button>
             </div>
         </div>
     )

@@ -14,7 +14,7 @@ async function postworldChat(message){
 
     const messageData = {
         message: message.message === '👋' && file ? '':message.message,
-        file:file,
+        file:file ? file:'',
         reactions: [],
         senderUID: userUID(),
         type:message.type,
