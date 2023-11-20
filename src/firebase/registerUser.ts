@@ -14,9 +14,11 @@ async function registerUser(data:any){
 
         const userDocRef = doc(db, "users", user.uid); // Reference to the user's document
         const anonymousMessageDocRef = doc(db, "anonymousMessage", user.uid)
+        const chatHeadsDocRef = doc(db,"usersChatHeads", user.uid)
         
         const userDocSnapshot = await getDoc(userDocRef);
         const anonymousMessageDocSnapShot = await getDoc(anonymousMessageDocRef);
+        const chatHeadsDocSnapShot = await getDoc(chatHeadsDocRef);
 
         const datas = {
             uid:user.uid,
@@ -27,7 +29,7 @@ async function registerUser(data:any){
         const avatar = await uploadAvatar(datas);
         const banner = await uploadBanner(datas);
     
-        if (!userDocSnapshot.exists() && !anonymousMessageDocSnapShot.exists()) {
+        if (!userDocSnapshot.exists() && !anonymousMessageDocSnapShot.exists() && !chatHeadsDocSnapShot.exists()) {
             // The document doesn't exist, so create it
             await setDoc(userDocRef, {
                 username: data.username,
@@ -40,9 +42,12 @@ async function registerUser(data:any){
             await setDoc(anonymousMessageDocRef, {
                 messages:[]
             })
+
+            await setDoc(chatHeadsDocRef, {})
     
             doc(db, "users", userDocRef.id);
             doc(db, "anonymousMessage", userDocRef.id)
+            doc(db, "usersChatHeads", userDocRef.id)
 
             userCookies(user.uid, user.accessToken);
         } else {
