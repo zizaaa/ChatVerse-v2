@@ -1,9 +1,15 @@
-import { useRef,useState } from "react"
-import searchUser from "../../firebase/data/user/searchUser";
+import { useEffect, useRef,useState } from "react"
+import { Link, Outlet,useNavigate } from "react-router-dom"
+import searchUser from "../../../firebase/data/user/searchUser";
+import checkChatHeads from "../../../firebase/data/user/checkChatHeads";
+import getChatHeads from "../../../firebase/data/PrivateChats/getChatHeads";
 
 function PrivateChat(){
     const [searchedUser, setSearchedUser] = useState({})
     const [isSearch, setIsSearch] = useState(false)
+    const [search, setSearch] = useState('')
+    const [chatHeads, setChatHeads] = useState([])
+    const navigate = useNavigate()
 
             // Define the debounce function
             const debounce = (func, delay) => {
@@ -29,7 +35,6 @@ function PrivateChat(){
             searchUser(query)
             .then((res)=>{
                 setSearchedUser(res)
-                console.log(res)
             })
     
         }, 300); // Adjust the debounce delay as needed
@@ -38,12 +43,33 @@ function PrivateChat(){
         // use debounce to delay the request of data from server
         const handleSearchUser = (event) => {
             const query = event.target.value;
+            setSearch(query)
             debounceSearch(query);
         };
 
         const handleCheckPrivateMessageRoute = (id) =>{
             console.log(id)
+            checkChatHeads(id)
+            .then((res)=>{
+                console.log(res)
+                navigate(`/private-chats/${res}`)
+                setIsSearch(false);
+                setSearch('')
+            })
         }
+
+        useEffect(() => {
+            const fetchData = async () => {
+                const unsubscribe = await getChatHeads(data => {
+                    setChatHeads(data);
+                });
+                
+                // Clean up the listener when the component unmounts
+                return () => unsubscribe();
+            };
+            
+            fetchData();
+        }, []);
 
     return(
         <div className="bg-darkBeige h-full rounded-bl-lg flex flex-row">
@@ -54,6 +80,7 @@ function PrivateChat(){
                         placeholder="Find or start a conversation"
                         className="w-full p-1 rounded-sm outline-none bg-taupe placeholder:text-grayishWhite placeholder:text-sm"
                         onChange={(e)=>{handleSearchUser(e)}}
+                        value={search}
                     />
                     {
                         isSearch ?
@@ -87,25 +114,30 @@ function PrivateChat(){
                 </div>
                 <div className="mt-3 w-full flex flex-col gap-1 overflow-auto max-h-[28.5rem]">
 
-                    {/* dummy user 1 */}
-                    {/* <div className="w-full flex items-center gap-2 bg-taupe p-1 rounded-sm">
-                        <div className="relative w-12 h-12 rounded-full">
-                            <img 
-                                src="https://randomuser.me/api/portraits/men/10.jpg"
-                                className="w-full h-full rounded-full"
-                            />
-                            <div className="h-[.9rem] w-[.9rem] rounded-full bg-green-500 absolute bottom-0 right-0 border-taupe border-2"></div>
-                        </div>
-                        <div>
-                            <p>zizaaa</p>
-                            <p className="text-[10px]">Online</p>
-                        </div>
-                    </div> */}
-
+                    {
+                        chatHeads != undefined ?
+                        chatHeads.map((chatHead,index)=>(
+                            <Link to={`/private-chats/${chatHead.conversationID}`} className="w-full flex items-center gap-2 p-1 rounded-sm" key={index}>
+                                <div className="relative w-12 h-12 rounded-full">
+                                    <img 
+                                        src={chatHead.avatar}
+                                        className="w-full h-full rounded-full object-cover"
+                                    />
+                                    <div className="h-[.9rem] w-[.9rem] rounded-full bg-green-500 absolute bottom-0 right-0 border-taupe border-2"></div>
+                                </div>
+                                <div>
+                                    <p>{chatHead.name}</p>
+                                    <p className="text-[10px]">Online</p>
+                                </div>
+                            </Link> 
+                        ))
+                        :
+                        null
+                    }
                 </div>
             </div>
             <div className="bg-beige flex-grow p-2">
-                conversations
+                <Outlet/>
             </div>
         </div>
     )
