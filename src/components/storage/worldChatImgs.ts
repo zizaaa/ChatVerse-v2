@@ -2,7 +2,9 @@ import { storage } from "../../firebase/firebase";
 import { ref, uploadBytes,getDownloadURL } from "firebase/storage" 
 
 async function worldChatImgs(file:any){
-
+    console.log('No file, returning now...')
+    if(!file) return;
+    console.log('has file')
     const storageRef = ref(storage, `globalChatImgs/${file.name}`);
 
     const metadata: any = {

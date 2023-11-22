@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import Layout from "./components/Layout"
 import GlobalChat from "./components/chats/GlobalChat"
-import PrivateChat from "./components/chats/PrivateChat"
+import PrivateChat from "./components/chats/privateChat/PrivateChat"
 import Index from "./components/discussion/Index"
 import Form from "./components/forms/Form"
 import Login from "./components/forms/Login"
@@ -9,6 +9,7 @@ import Register from "./components/forms/Register"
 import authenticate from "./components/protected/auth"
 import ProtectedRoute from "./components/protected/ProtectedRoutes"
 import IsLogIn from "./components/protected/IsLogin"
+import Conversation from "./components/chats/privateChat/conversation"
 
 function App() {
 
@@ -37,7 +38,12 @@ function App() {
                   element={
                     <PrivateChat/>
                   }
-                />
+                >
+                    <Route 
+                      path=":id"
+                      element={<Conversation/>}
+                      />
+                </Route>
 
                 <Route 
                   path="/discussions" 

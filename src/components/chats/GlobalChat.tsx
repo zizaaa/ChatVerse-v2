@@ -339,7 +339,7 @@ function GlobalChat() {
                                                             :
 
                                                             message.data.message !== '' && message.data.file !== '' ?
-                                                            <div className="bg-taupe">
+                                                            <div className="bg-taupe w-full p-2 flex-wrap h-auto rounded-lg">
                                                                 <img 
                                                                     src={message.data.file}
                                                                     className="bg-red-300 max-h-40 max-w-40"
