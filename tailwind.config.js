@@ -15,7 +15,9 @@ export default {
       colors:{
         "black":"rgba(0,0,0,0.66)",
         "taupe":"#675D50",
-        "grayishWhite":"rgba(255,255,255,0.86)"
+        "grayishWhite":"rgba(255,255,255,0.86)",
+        "beige":"#B3A492",
+        "darkBeige":"#a69988"
       },
       screens:{
         "large":"961px",

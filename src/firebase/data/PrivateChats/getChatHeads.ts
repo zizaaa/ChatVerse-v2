@@ -17,7 +17,9 @@ async function getChatHeads(callback) {
                     // Use Promise.all to wait for all getUser calls to complete
                     const userData = Promise.all(documentData.map(async data => {
                         const user = await getUser(data.userID);
+                        // console.log(user)
                         return {
+                            userID:data.userID,
                             avatar: user?.avatar,
                             name: user?.name,
                             username: user?.username,
