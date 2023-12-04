@@ -14,7 +14,7 @@ function Nav(){
             >
                     Global Chats
             </NavLink>
-            <NavLink 
+            {/* <NavLink 
                 to='/private-chats' 
                 className={
                     ({isActive})=> isActive ? 
@@ -35,7 +35,18 @@ function Nav(){
                 }
             >
                 Discussions
-            </NavLink>
+            </NavLink> */}
+            <NavLink 
+                to='/secret-messages' 
+                className={
+                    ({isActive})=> isActive ? 
+                        'p-2 bg-darkBeige'
+                    :
+                        'p-2'
+                }
+            >
+                Secret Message
+            </NavLink> 
         </div>
     )
 }

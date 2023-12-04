@@ -4,20 +4,22 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import userCookies from "../components/cookies/userCookies";
 import uploadAvatar from "../components/storage/uploadAvatar";
 import uploadBanner from "../components/storage/uploadBanner";
+import axios from "axios";
 
 async function registerUser(data:any){
+    const env = import.meta.env;
+    const uri = env.VITE_REACT_SERVER_URL;
     const auth = getAuth();
+
     return createUserWithEmailAndPassword(auth, data.email, data.password)
     .then(async(userCredential) => {
         // Signed up 
         const user = userCredential.user;
 
         const userDocRef = doc(db, "users", user.uid); // Reference to the user's document
-        const anonymousMessageDocRef = doc(db, "anonymousMessage", user.uid)
         const chatHeadsDocRef = doc(db,"usersChatHeads", user.uid)
         
         const userDocSnapshot = await getDoc(userDocRef);
-        const anonymousMessageDocSnapShot = await getDoc(anonymousMessageDocRef);
         const chatHeadsDocSnapShot = await getDoc(chatHeadsDocRef);
 
         const datas = {
@@ -29,19 +31,22 @@ async function registerUser(data:any){
         const avatar = await uploadAvatar(datas);
         const banner = await uploadBanner(datas);
     
-        if (!userDocSnapshot.exists() && !anonymousMessageDocSnapShot.exists() && !chatHeadsDocSnapShot.exists()) {
-            // The document doesn't exist, so create it
-            await setDoc(userDocRef, {
-                username: data.username,
-                name: data.name,
-                email: data.email,
-                avatar,
-                banner,
-            });
-
-            await setDoc(anonymousMessageDocRef, {
-                messages:[]
-            })
+        if (!userDocSnapshot.exists() && !chatHeadsDocSnapShot.exists()) {
+                await axios.post(`${uri}/api/createSecretMessage`)
+                .then(async(res)=>{
+                    await setDoc(userDocRef, {
+                        username: data.username,
+                        name: data.name,
+                        email: data.email,
+                        avatar,
+                        banner,
+                        secretMessageID:res.data.secretMessageId,
+                        accessTOKEN:res.data.accessToken
+                    });
+                })
+                .catch((error)=>{
+                    return error.message;
+                })
 
             await setDoc(chatHeadsDocRef, {})
     

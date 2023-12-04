@@ -48,6 +48,10 @@ function Register(){
             setError('password');
             return
         }
+        if(!avatar || !banner){
+            setIsErrorMessage("Avatar and Banner is Required");
+            return
+        }
 
         const emailRegex = /^.+@.+$/;
         if(!emailRegex.test(email)){
@@ -195,6 +199,7 @@ function Register(){
                                 multiple={false} 
                                 onChange={(e)=>{handleAvatarChange(e)}}
                                 className="file:border-none file:rounded-md file:px-2 file:py-1 file:text-black file:cursor-pointer w-full"
+                                required
                             />
                         </div>
                         <div className="flex flex-col">
@@ -206,6 +211,7 @@ function Register(){
                                 multiple={false}
                                 onChange={(e)=>{handleBannerChange(e)}}
                                 className="file:border-none file:rounded-md file:px-2 file:py-1 file:text-black file:cursor-pointer w-full"
+                                required
                             />
                         </div>
                     </div>

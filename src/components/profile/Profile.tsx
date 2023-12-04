@@ -22,14 +22,14 @@ function Profile(){
 
     return(
         <div className="w-full h-full p-2 flex flex-col">
-            <div className="w-full flex items-center justify-between">
+            {/* <div className="w-full flex items-center justify-between">
                 <div className="text-2xl drop-shadow-md">
                     <FaRegBell/>
                 </div>
                 <div className="text-2xl drop-shadow-md">
                     <FaUserSecret/>
                 </div>
-            </div>
+            </div> */}
             <div className="flex flex-col flex-1 mt-2">
                 <div className="flex flex-col items-center w-full bg-taupe rounded-md drop-shadow-lg">
                     
@@ -73,29 +73,10 @@ function Profile(){
                 </div>
                 <div className="mt-2 flex flex-col flex-grow">
                     <h1 className="text-grayishWhite text-sm">
-                        Settings
+                        Notifications
                     </h1>
-                    <div className="flex flex-col bg-taupe rounded-md drop-shadow-md">
-                        <Link 
-                            to=''
-                            className="px-2 py-3 text-grayishWhite text-[15px]"
-                        >
-                            My Account
-                        </Link>
-                        <span className="border-[rgba(255,255,255,0.61)] border-t-[1px]"></span>
-                        <Link 
-                            to=''
-                            className="px-2 py-3 text-grayishWhite text-[15px]"
-                        >
-                            Profile
-                        </Link>
-                        <span className="border-[rgba(255,255,255,0.61)] border-t-[1px]"></span>
-                        <Link 
-                            to=''
-                            className="px-2 py-2 text-grayishWhite text-[15px]"
-                        >
-                            Devices
-                        </Link>
+                    <div>
+
                     </div>
                 </div>
                 <button className="bg-taupe drop-shadow-md py-3 mt-1 rounded-md">Log out</button>

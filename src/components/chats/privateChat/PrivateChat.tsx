@@ -58,18 +58,18 @@ function PrivateChat(){
             })
         }
 
-        useEffect(() => {
-            const fetchData = async () => {
-                const unsubscribe = await getChatHeads(data => {
-                    setChatHeads(data);
-                });
+        // useEffect(() => {
+        //     const fetchData = async () => {
+        //         const unsubscribe = await getChatHeads(data => {
+        //             setChatHeads(data);
+        //         });
                 
-                // Clean up the listener when the component unmounts
-                return () => unsubscribe();
-            };
+        //         // Clean up the listener when the component unmounts
+        //         return () => unsubscribe();
+        //     };
             
-            fetchData();
-        }, []);
+        //     fetchData();
+        // }, []);
 
     return(
         <div className="bg-darkBeige h-full rounded-bl-lg flex flex-row">
