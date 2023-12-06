@@ -11,10 +11,10 @@ import ProtectedRoute from "./components/protected/ProtectedRoutes"
 import IsLogIn from "./components/protected/IsLogin"
 // import Conversation from "./components/chats/privateChat/conversation"
 import SecretMessages from "./components/chats/secretmessage/SecretMessages"
-import PostSecretMessage from "./components/chats/secretmessage/postSecretMessage"
-import PathLayout from "./components/chats/secretmessage/pathLayout"
+import PostSecretMessage from "./components/chats/secretmessage/PostSecretMessage.tsx"
+import PathLayout from "./components/chats/secretmessage/PathLayout.tsx"
 import SuccessMessage from "./components/chats/secretmessage/SuccessMessage"
-import BrokenPath from "./components/chats/secretmessage/brokenPath"
+import BrokenPath from "./components/chats/secretmessage/BrokenPath.tsx"
 
 function App() {
 
