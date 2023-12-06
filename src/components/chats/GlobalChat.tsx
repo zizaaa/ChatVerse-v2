@@ -264,11 +264,14 @@ function GlobalChat() {
                                 {
                                     userDataMap[message.data.senderUID] && 
                                     (
-                                        <img 
-                                            src={userDataMap[message.data.senderUID].avatar} 
-                                            alt="User Avatar" 
-                                            className="w-[2.5rem] h-[2.5rem] rounded-full"
-                                        />
+                                        message.data.senderUID === logedInUID ?
+                                            null
+                                            :
+                                            <img 
+                                                src={userDataMap[message.data.senderUID].avatar} 
+                                                alt="User Avatar" 
+                                                className="w-[2.5rem] h-[2.5rem] rounded-full"
+                                            />
                                     )
                                 }
                                 </div>

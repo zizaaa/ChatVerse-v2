@@ -1,15 +1,20 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import Layout from "./components/Layout"
 import GlobalChat from "./components/chats/GlobalChat"
-import PrivateChat from "./components/chats/privateChat/PrivateChat"
-import Index from "./components/discussion/Index"
+// import PrivateChat from "./components/chats/privateChat/PrivateChat"
+// import Index from "./components/discussion/Index"
 import Form from "./components/forms/Form"
 import Login from "./components/forms/Login"
 import Register from "./components/forms/Register"
 import authenticate from "./components/protected/auth"
 import ProtectedRoute from "./components/protected/ProtectedRoutes"
 import IsLogIn from "./components/protected/IsLogin"
-import Conversation from "./components/chats/privateChat/conversation"
+// import Conversation from "./components/chats/privateChat/conversation"
+import SecretMessages from "./components/chats/secretmessage/SecretMessages"
+import PostSecretMessage from "./components/chats/secretmessage/PostSecretMessage.tsx"
+import PathLayout from "./components/chats/secretmessage/PathLayout.tsx"
+import SuccessMessage from "./components/chats/secretmessage/SuccessMessage"
+import BrokenPath from "./components/chats/secretmessage/BrokenPath.tsx"
 
 function App() {
 
@@ -32,8 +37,13 @@ function App() {
                     <GlobalChat/>
                   }
                 />
-
-                <Route 
+                  <Route 
+                    path="/secret-messages" 
+                    element={
+                      <SecretMessages/>
+                    }
+                  />
+                {/* <Route 
                   path="/private-chats" 
                   element={
                     <PrivateChat/>
@@ -50,7 +60,7 @@ function App() {
                   element={
                     <Index/>
                   }
-                />
+                /> */}
             </Route>
 
             <Route 
@@ -75,6 +85,33 @@ function App() {
                   }
                 />
             </Route>
+          
+          <Route
+            path="/send-secret-message/:id"
+            element={
+                <PostSecretMessage/>
+            }
+          />
+
+          <Route 
+            path="/paths"
+            element={
+              <PathLayout/>
+            }
+          >
+            <Route
+              path="/paths/success"
+              element={
+                  <SuccessMessage/>
+              }
+            />
+            <Route
+              path="/paths/broken/:id"
+              element={
+                  <BrokenPath/>
+              }
+            />
+          </Route>
 
           <Route 
             path="*" 

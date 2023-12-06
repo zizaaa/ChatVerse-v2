@@ -58,18 +58,18 @@ function PrivateChat(){
             })
         }
 
-        useEffect(() => {
-            const fetchData = async () => {
-                const unsubscribe = await getChatHeads(data => {
-                    setChatHeads(data);
-                });
+        // useEffect(() => {
+        //     const fetchData = async () => {
+        //         const unsubscribe = await getChatHeads(data => {
+        //             setChatHeads(data);
+        //         });
                 
-                // Clean up the listener when the component unmounts
-                return () => unsubscribe();
-            };
+        //         // Clean up the listener when the component unmounts
+        //         return () => unsubscribe();
+        //     };
             
-            fetchData();
-        }, []);
+        //     fetchData();
+        // }, []);
 
     return(
         <div className="bg-darkBeige h-full rounded-bl-lg flex flex-row">
@@ -91,18 +91,18 @@ function PrivateChat(){
                                     onClick={()=>{handleCheckPrivateMessageRoute(searchedUser.userId)}}
                                     className="flex flex-row items-center gap-2 w-full"
                                 >
-                                <div className="relative w-10 h-10 rounded-full">
-                                    <img 
-                                        src={searchedUser.avatar}
-                                        className="w-full h-full rounded-full object-cover"
-                                        loading="lazy"
-                                    />
-                                    <div className="h-[.8rem] w-[.8rem] rounded-full bg-green-500 absolute bottom-0 right-0 border-taupe border-2"></div>
-                                </div>
-                                <div>
-                                    <p className="text-sm">{searchedUser.name}</p>
-                                    <p className="text-[10px]">Online</p>
-                                </div>
+                                    <div className="relative w-10 h-10 rounded-full">
+                                        <img 
+                                            src={searchedUser.avatar}
+                                            className="w-full h-full rounded-full object-cover"
+                                            loading="lazy"
+                                        />
+                                        <div className="h-[.8rem] w-[.8rem] rounded-full bg-green-500 absolute bottom-0 right-0 border-taupe border-2"></div>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm">{searchedUser.name}</p>
+                                        <p className="text-[10px]">Online</p>
+                                    </div>
                                 </button>
                                 :
                                 <p className="text-sm text-grayishWhite">User not found</p>
@@ -117,7 +117,7 @@ function PrivateChat(){
                     {
                         chatHeads != undefined ?
                         chatHeads.map((chatHead,index)=>(
-                            <Link to={`/private-chats/${chatHead.conversationID}`} className="w-full flex items-center gap-2 p-1 rounded-sm" key={index}>
+                            <Link to={{pathname:`/private-chats/${chatHead.conversationID}`}} state = {{data:chatHead}} className="w-full flex items-center gap-2 p-1 rounded-sm" key={index}>
                                 <div className="relative w-12 h-12 rounded-full">
                                     <img 
                                         src={chatHead.avatar}

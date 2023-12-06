@@ -2,10 +2,13 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { setDoc, doc, getDoc } from "firebase/firestore"; 
 import { db } from "./firebase";
 import userCookies from "../components/cookies/userCookies";
+import axios from "axios";
 
 function googleAuth(){
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
+    const env = import.meta.env;
+    const uri = env.VITE_REACT_SERVER_URL;
 
     signInWithPopup(auth, provider)
     .then(async(result) => {
@@ -23,16 +26,21 @@ function googleAuth(){
     
         if (!userDocSnapshot.exists() && !anonymousMessageDocSnapShot.exists()) {
             // The document doesn't exist, so create it
-            await setDoc(userDocRef, {
-                username: user.displayName,
-                name: user.displayName,
-                email: user.email,
-                avatar:user.photoURL,
-                banner:''
-            });
-
-            await setDoc(anonymousMessageDocRef, {
-                messages:[]
+            await axios.post(`${uri}/api/createSecretMessage`)
+            .then(async(res)=>{
+                // The document doesn't exist, so create it
+                await setDoc(userDocRef, {
+                    username: user.displayName,
+                    name: user.displayName,
+                    email: user.email,
+                    avatar:user.photoURL,
+                    banner:'',
+                    secretMessageID:res.data.secretMessageId,
+                    accessTOKEN:res.data.accessToken
+                });
+            })
+            .catch((error)=>{
+                return error.message;
             })
     
             doc(db, "users", userDocRef.id); // Get the document reference

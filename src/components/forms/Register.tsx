@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState,useRef } from "react"
 import { Link } from "react-router-dom"
 import registerUser from "../../firebase/registerUser"
 import FacebookAndGoogle from "./FacebookAndGoogle";
@@ -18,6 +18,8 @@ function Register(){
 
     const [error, setError] = useState('');
     const [errorMessage, setIsErrorMessage] = useState('');
+
+    const aboutRef = useRef(null);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -48,6 +50,10 @@ function Register(){
             setError('password');
             return
         }
+        if(!avatar || !banner){
+            setIsErrorMessage("Avatar and Banner is Required");
+            return
+        }
 
         const emailRegex = /^.+@.+$/;
         if(!emailRegex.test(email)){
@@ -61,7 +67,8 @@ function Register(){
             password:pass,
             email:email,
             avatar:avatar,
-            banner:banner
+            banner:banner,
+            about:aboutRef.current.value
         }
     }
 
@@ -195,6 +202,7 @@ function Register(){
                                 multiple={false} 
                                 onChange={(e)=>{handleAvatarChange(e)}}
                                 className="file:border-none file:rounded-md file:px-2 file:py-1 file:text-black file:cursor-pointer w-full"
+                                required
                             />
                         </div>
                         <div className="flex flex-col">
@@ -206,6 +214,7 @@ function Register(){
                                 multiple={false}
                                 onChange={(e)=>{handleBannerChange(e)}}
                                 className="file:border-none file:rounded-md file:px-2 file:py-1 file:text-black file:cursor-pointer w-full"
+                                required
                             />
                         </div>
                     </div>
@@ -311,20 +320,23 @@ function Register(){
                         </div>
                     </div>
 
-                    <div className="w-full hidden medium:flex flex-col items-start justify-center gap-1 h-full px-5 text-grayishWhite my-12">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <p>Username:</p>
-                            <p>{username}</p>
+                    <div className="w-full flex flex-col items-start h-full text-grayishWhite mt-10 mb-4 px-2">
+                        <div className="flex pb-2 flex-col items-start flex-wrap w-full border-b-[1px] border-beige">
+                            <h1 className="text-lg">{name}</h1>
+                            <h2 className="text-sm">@{username}</h2>
                         </div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <p>Name:</p>
-                            <p>{name}</p>
-                        </div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <p>Email:</p>
-                            <p>{email}</p>
+                        <div className="flex flex-col gap-2 mt-2 w-full">
+                            <p className="text-[12px] uppercase">About</p>
+                            <textarea 
+                                className="w-full text-black p-2 outline-none resize-none bg-beige text-white rounded-md placeholder:text-black" 
+                                rows={4}
+                                autoFocus
+                                placeholder="Say something..."
+                                ref={aboutRef}
+                            />
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
