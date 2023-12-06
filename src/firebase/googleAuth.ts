@@ -35,7 +35,7 @@ function googleAuth(){
                     email: user.email,
                     avatar:user.photoURL,
                     banner:'',
-                    ecretMessageID:res.data.secretMessageId,
+                    secretMessageID:res.data.secretMessageId,
                     accessTOKEN:res.data.accessToken
                 });
             })

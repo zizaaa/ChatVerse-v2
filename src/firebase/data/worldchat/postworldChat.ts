@@ -19,6 +19,7 @@ async function postworldChat(message){
         senderUID: userUID(),
         type:message.type,
         replyTo:message.replyTo,
+        seenBy:[],
         timestamp: generateTimestamp()
     };
 

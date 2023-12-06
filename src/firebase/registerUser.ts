@@ -40,6 +40,7 @@ async function registerUser(data:any){
                         email: data.email,
                         avatar,
                         banner,
+                        about:data.about,
                         secretMessageID:res.data.secretMessageId,
                         accessTOKEN:res.data.accessToken
                     });

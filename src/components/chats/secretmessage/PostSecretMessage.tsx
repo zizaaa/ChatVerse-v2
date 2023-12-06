@@ -29,9 +29,8 @@ function PostSecretMessage() {
 
         console.log(message)
         
-        await axios.put(`${uri}/api/postSecretMessage`,
+        await axios.put(`${uri}/api/postSecretMessage/${id}`,
             {
-                id:id,
                 message:message,
                 messageID:uuidv4()
             }
